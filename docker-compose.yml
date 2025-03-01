@@ -1,0 +1,53 @@
+services:
+  # Angular Frontend
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: FRONT
+      target: development
+    command: npm run start
+    volumes:
+      - /orxan/frontend/src/app
+      - /orxan/frontend/src/app/node_modules
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api
+
+  postgres:
+    image: postgres:17.4
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    ports:
+      - 35000:5432
+
+  # NestJS Todo Api
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: BACK
+      # Only build development stoge from our dockerfile
+      target: development
+    volumes:
+      - /orxan/back/src/app
+      - /orxan/back/src/app/node_modules/
+    # dev mode: npm run start:dev / debug: npm run start:debug
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/db
+    ports:
+      - "3000:3000"
+
+  postgres_admin:
+    image: dpage/pgadmin4:9.1
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5050:80

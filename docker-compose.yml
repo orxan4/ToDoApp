@@ -1,54 +1,64 @@
 services:
-  # Angular Frontend
+  backend:
+    build:
+      context: ./BACK
+      dockerfile: Dockerfile
+    container_name: nestjs_todo_app
+    restart: no
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./BACK:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://user:password@postgres:5432/db
+      - JWT_SECRET_KEY=alnjdljnsldkjfnvlsdfubsun
+    depends_on:
+      - postgres
+
   frontend:
     build:
+      context: ./FRONT
       dockerfile: Dockerfile
-      context: FRONT
-      target: development
-    command: npm run start
-    volumes:
-      - /orxan/frontend/src/app
-      - /orxan/frontend/src/app/node_modules
+    container_name: angular_todo_app
+    restart: no
     ports:
       - "4200:4200"
+    volumes:
+      - ./FRONT:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm start
+    environment:
+      - NODE_ENV=development
     depends_on:
-      - api
+      - backend
 
   postgres:
     image: postgres:17.4
+    container_name: postgres
+    restart: no
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db
     ports:
-      - 35000:5432
-
-  # NestJS Todo Api
-  api:
-    build:
-      dockerfile: Dockerfile
-      context: BACK
-      # Only build development stoge from our dockerfile
-      target: development
+      - "35000:5432"
     volumes:
-      - /orxan/back/src/app
-      - /orxan/back/src/app/node_modules/
-    # dev mode: npm run start:dev / debug: npm run start:debug
-    command: npm run start:dev
-    depends_on:
-      - postgres
-    environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/db
-      JWT_SECRET_KEY: alnjdljnsldkjfnvlsdfubsun
-    ports:
-      - "3000:3000"
+      - postgres_data:/var/lib/postgresql/data
 
-  postgres_admin:
+  pgadmin:
     image: dpage/pgadmin4:9.1
-    depends_on:
-      - postgres
+    container_name: pgadmin4
+    restart: no
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
-      - 5050:80
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

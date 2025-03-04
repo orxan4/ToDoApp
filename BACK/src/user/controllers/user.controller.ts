@@ -13,8 +13,9 @@ export class UserController {
     private readonly dtoHelperService: DtoHelperService,
   ) {}
 
-  @Post()
+  @Post('register')
   async create(@Body() createUserDto: CreateUserDto): Promise<UserInterface> {
+    console.log(createUserDto);
     const userEntity = this.dtoHelperService.createUserDtoToEntity(createUserDto);
     return this.userService.create(userEntity);
   }

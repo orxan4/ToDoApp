@@ -10,7 +10,7 @@ services:
     volumes:
       - ./BACK:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run start:dev
+#    command: npm run start:dev
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgres://user:password@postgres:5432/db
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./FRONT:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm start
+#    command: npm start
     environment:
       - NODE_ENV=development
     depends_on:

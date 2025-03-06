@@ -26,9 +26,10 @@ export class UserService {
   ) {}
 
   login(user: UserLoginDto): Observable<LoginResponseModel> {
-    const url = 'api/users/login';
+    const url = 'http://localhost:3000/api/users/login';
+    // const url = 'api/users/login'; ??
     return this.httpClient.post<LoginResponseModel>(url, user).pipe(
-      tap((response: LoginResponseModel) => localStorage.setItem('access', response.access_token)),
+      tap((response: LoginResponseModel) => localStorage.setItem('access_token', response.access_token)),
       tap(() => this.snackBar.open('Login Successfully', 'Close', snackBarConfig)),
       catchError((err: any) => {
         this.snackBar.open(`${err.error.message}`, 'Close', snackBarConfig);
@@ -38,7 +39,8 @@ export class UserService {
   }
 
   register(user: UserRegisterDto) {
-    const url = 'api/users/register';
+    const url = 'http://localhost:3000/api/users/register';
+    // const url = 'api/users/register'; ??
     return this.httpClient.post<UserModel>(url, user).pipe(
       tap((createdUser: UserModel) => {
         this.snackBar.open(

@@ -13,7 +13,7 @@ export class UserService {
     private authService: AuthService,
   ) {}
 
-  async create(newUser: UserModel): Promise<UserInterface> {
+  async create(newUser: UserModel): Promise<UserDto> {
     const emailExists: boolean = await this.mailExists(newUser.email);
     const usernameExists: boolean = await this.usernameExists(newUser.username);
 
@@ -26,7 +26,12 @@ export class UserService {
         password: passwordHash,
       });
 
-      return await this.userRepository.save(user, { reload: true });
+      const _user: User = await this.userRepository.save(user, { reload: true });
+      return {
+        id: _user.id,
+        username: _user.username,
+        email: _user.email,
+      } as UserDto;
     } else throw new HttpException('Email or Username already taken', HttpStatus.CONFLICT);
   }
 

@@ -2,7 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 
 import { UserService } from '../services/user.service';
 import { DtoHelperService } from '../dto/dto-helper.service';
-import { LoginResponseInterface, UserInterface } from '../interfaces/user.interface';
+import { LoginResponseInterface, UserDto, UserInterface } from '../interfaces/user.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDTO } from '../dto/login-user.dto';
 
@@ -14,8 +14,7 @@ export class UserController {
   ) {}
 
   @Post('register')
-  async create(@Body() createUserDto: CreateUserDto): Promise<UserInterface> {
-    console.log(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
     const userEntity = this.dtoHelperService.createUserDtoToEntity(createUserDto);
     return this.userService.create(userEntity);
   }

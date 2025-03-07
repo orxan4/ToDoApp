@@ -52,6 +52,10 @@ export class UserService {
     } else throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
+  async getOneById(id: number): Promise<User> {
+    return await this.userRepository.findOneByOrFail({ id });
+  }
+
   private async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email }, select: ['id', 'email', 'password', 'username'] });
   }

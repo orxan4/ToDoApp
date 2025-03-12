@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UserDto } from '../../user/interfaces/user.interface';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+
+import { UserDto } from '../../user/interfaces/user.interface';
+import { JWTInterface } from '../../interfaces/app.interface';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +21,7 @@ export class AuthService {
     return await bcrypt.compare(password, storedPasswordHash);
   }
 
-  async verifyJWT(jwt: string): Promise<any> {
+  async verifyJWT(jwt: string): Promise<JWTInterface> {
     return this.jwtService.verifyAsync(jwt);
   }
 }

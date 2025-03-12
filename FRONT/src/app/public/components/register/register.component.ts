@@ -60,7 +60,7 @@ export class RegisterComponent {
         password: this.fcPassword.value,
       } as UserRegisterDto;
       this.userService.register(registerDto).subscribe({
-        next: (result: UserModel) => this.router.navigate(['/login']),
+        next: (result: UserModel) => this.router.navigate(['public/login']),
         error: error => console.log(error),
       })
     }

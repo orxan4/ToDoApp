@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { PublicComponent } from './public/public.component';
 import { LoginComponent } from './public/components/login/login.component';
 import { RegisterComponent } from './public/components/register/register.component';
+import { DashboardComponent } from './private/components/dashboard/dashboard.component';
+import { NotFoundComponent } from './public/components/not-found/not-found.component';
 
 export const routes: Routes = [
   {
@@ -14,5 +16,11 @@ export const routes: Routes = [
       { path: 'register', component: RegisterComponent },
     ],
   },
-  { path: '**', redirectTo: 'public', pathMatch: 'full' },
+  {
+    path: 'private',
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+    ],
+  },
+  { path: '**', component: NotFoundComponent },
 ];

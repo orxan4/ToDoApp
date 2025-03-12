@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { User } from '../entities/user.entity';
 import { AuthService } from '../../auth/services/auth.service';
-import { UserDto, UserInterface, UserModel } from '../interfaces/user.interface';
+import { UserCreateModel, UserDto, UserLoginModel } from '../interfaces/user.interface';
 
 @Injectable()
 export class UserService {
@@ -13,7 +13,7 @@ export class UserService {
     private authService: AuthService,
   ) {}
 
-  async create(newUser: UserModel): Promise<UserDto> {
+  async create(newUser: UserCreateModel): Promise<UserDto> {
     const emailExists: boolean = await this.mailExists(newUser.email);
     const usernameExists: boolean = await this.usernameExists(newUser.username);
 
@@ -35,7 +35,7 @@ export class UserService {
     } else throw new HttpException('Email or Username already taken', HttpStatus.CONFLICT);
   }
 
-  async login(user: UserInterface): Promise<string> {
+  async login(user: UserLoginModel): Promise<string> {
     const foundUser: User | null = await this.findByEmail(user.email);
 
     if (foundUser) {
@@ -50,6 +50,10 @@ export class UserService {
         return this.authService.generateJwt(passExcluded);
       } else throw new HttpException('Login was not successfully, wrong credentials', HttpStatus.UNAUTHORIZED);
     } else throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  }
+
+  async getOneById(id: number): Promise<User> {
+    return await this.userRepository.findOneByOrFail({ id });
   }
 
   private async findByEmail(email: string): Promise<User | null> {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { CreateUserDto } from './create-user.dto';
 import { LoginUserDTO } from './login-user.dto';
-import { UserInterface } from '../interfaces/user.interface';
+import { UserLoginModel } from '../interfaces/user.interface';
 
 @Injectable()
 export class DtoHelperService {
@@ -14,7 +14,7 @@ export class DtoHelperService {
     };
   }
 
-  loginUserDtoToEntity(loginUserDto: LoginUserDTO): UserInterface {
+  loginUserDtoToEntity(loginUserDto: LoginUserDTO): UserLoginModel {
     return {
       email: loginUserDto.email,
       password: loginUserDto.password,

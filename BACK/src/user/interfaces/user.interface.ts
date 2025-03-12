@@ -5,8 +5,13 @@ export interface UserInterface {
   password: string;
 }
 
-export interface UserModel {
+export interface UserCreateModel {
   username: string;
+  email: string;
+  password: string;
+}
+
+export interface UserLoginModel {
   email: string;
   password: string;
 }
@@ -20,5 +25,5 @@ export interface UserDto {
 export interface LoginResponseInterface {
   access_token: string;
   token_type: string;
-  expires_in: number;
+  expires_in: string;
 }

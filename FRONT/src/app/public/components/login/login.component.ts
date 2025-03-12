@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { tap } from 'rxjs';
 
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
@@ -42,7 +43,7 @@ export class LoginComponent {
     }
   );
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   login(): void {
     if (this.form.valid) {
@@ -50,7 +51,9 @@ export class LoginComponent {
         email: this.fcEmail.value,
         password: this.fcPassword.value,
       } as UserLoginDto;
-      this.userService.login(loginDto).subscribe();
+      this.userService.login(loginDto).pipe(
+        tap(() => this.router.navigate(['private/dashboard']),)
+      ).subscribe();
     }
   }
 }

@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
-import { json, urlencoded, Request, Response } from 'express';
+import { ValidationPipe } from '@nestjs/common';
+import { json, urlencoded } from 'express';
 
 import { AppModule } from './app.module';
+import { logger } from './common/middleware/logger.middleware';
 
 async function bootstrap() {
   const port = process.env.PORT ?? 3000;
@@ -10,27 +11,18 @@ async function bootstrap() {
 
   app.use(json({ limit: '2mb' }));
   app.use(urlencoded({ extended: true, limit: '2mb' }));
-
-  app.use((req: Request, res: Response, next: any): void => {
-    const start: number = Date.now();
-    res.on('finish', () => {
-      const duration = Date.now() - start;
-      Logger.log(`${req.method} ${req.url} ${res.statusCode} - ${req.ip} - ${duration}ms`, 'RequestLog');
-    });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    next();
-  });
+  app.use(logger);
 
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://192.168.0.100:4200'],
+    origin: ['*', 'http://127.0.0.1:4200', 'http://localhost:4200', 'http://192.168.0.100:4200'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type',
     credentials: true,
   });
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(port, () => console.log(`Listening on port ${port}`));
+  await app.listen(port, () => console.log(`${'--'.repeat(10)}\nListening on port ${port}`));
 }
 bootstrap();

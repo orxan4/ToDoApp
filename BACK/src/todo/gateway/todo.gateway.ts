@@ -6,17 +6,17 @@ import { UserService } from '../../user/services/user.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserInterface } from '../../user/interfaces/user.interface';
 
-@WebSocketGateway({ namespace: 'todos' })
+@WebSocketGateway({ namespace: 'todos', cors: { origin: ['http://localhost:3000', 'http://localhost:4200'] } })
 export class TodoGateway implements OnGatewayConnection {
   constructor(
     private userService: UserService,
     private authService: AuthService,
   ) {}
 
-  async handleConnection(socket: Socket): Promise<any> {
+  async handleConnection(socket: Socket) {
     try {
       // if the token is not verified, this will throw and we can catch & disconnect the user
-      const jwtToken: string | undefined = socket.handshake.headers.authorization;
+      const jwtToken: string | undefined = socket.handshake.auth.Authorization;
 
       if (jwtToken) {
         const decodedToken = await this.authService.verifyJWT(jwtToken);

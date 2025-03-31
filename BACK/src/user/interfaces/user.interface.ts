@@ -27,3 +27,9 @@ export interface LoginResponseInterface {
   token_type: string;
   expires_in: string;
 }
+
+export interface ConnectionInterface {
+  id?: number;
+  socketId?: string;
+  connectedUser?: UserInterface;
+}

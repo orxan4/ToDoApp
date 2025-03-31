@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client';
+import { TodoItemInterface } from '../interfaces/todo-item.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -13,5 +14,11 @@ export class TodoService {
 
   public sendMessage() {
     this.socket.emit('message', 'message')
+  }
+
+  public getTodos() {
+    this.socket.on('todos', (todos: TodoItemInterface[]) => {
+      todos.forEach(t => console.log(t));
+    })
   }
 }

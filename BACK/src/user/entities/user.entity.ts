@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ConnectionEntity } from './connection.entity';
 
 @Entity()
 export class User {
@@ -13,6 +14,9 @@ export class User {
 
   @Column({ select: false })
   password: string;
+
+  @OneToMany(() => ConnectionEntity, (connection: ConnectionEntity) => connection.connectedUser)
+  connections: ConnectionEntity[];
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -1,0 +1,24 @@
+.item {
+  padding: 0 15px;
+  border-left: solid 3px;
+}
+
+.subTitle {
+  padding-left: 10px;
+}
+
+.complexityEasy {
+  border-left-color: limegreen;
+}
+
+.complexityMedium {
+  border-left-color: blue;
+}
+
+.complexityHard {
+  border-left-color: red;
+}
+
+.done {
+  text-decoration: line-through;
+}

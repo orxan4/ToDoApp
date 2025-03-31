@@ -52,7 +52,7 @@ export class LoginComponent {
         password: this.fcPassword.value,
       } as UserLoginDto;
       this.userService.login(loginDto).pipe(
-        tap(() => this.router.navigate(['private/dashboard']),)
+        tap(() => this.router.navigate(['private/dashboard']))
       ).subscribe();
     }
   }

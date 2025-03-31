@@ -1,1 +1,43 @@
-<p>dashboard works!</p>
+<div cdkDropListGroup>
+  <div class="list-container">
+    <h2>Backlog</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="backlogItems"
+      class="list"
+      (cdkDropListDropped)="drop($event)">
+      @for (item of backlogItems; track item) {
+        <app-card class="list-box" cdkDrag [item]="item"></app-card>
+      }
+    </div>
+  </div>
+
+  <div class="list-container">
+    <h2>To do</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="todoItems"
+      class="list"
+      (cdkDropListDropped)="drop($event)">
+      @for (item of todoItems; track item) {
+        <app-card class="list-box" cdkDrag [item]="item"></app-card>
+      }
+    </div>
+  </div>
+
+  <div class="list-container">
+    <h2>Done</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="doneItems"
+      class="list"
+      (cdkDropListDropped)="drop($event)">
+      @for (item of doneItems; track item) {
+        <app-card class="list-box" cdkDrag [item]="item"></app-card>
+      }
+    </div>
+  </div>
+</div>

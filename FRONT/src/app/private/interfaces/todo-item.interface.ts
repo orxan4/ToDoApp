@@ -7,12 +7,20 @@ export interface TodoItemInterface {
   createdAt?: Date;
   updatedAt?: Date;
 
-  status: Status;
+  status: StatusInterface;
   title: string;
   subTitle: string;
   text: string;
-  complexity: Complexity;
+  complexity: ComplexityInterface;
 }
 
-export type Status = 'BACKLOG' | 'TODO' | 'DONE';
-export type Complexity = 'EASY' | 'MEDIUM' | 'HARD';
+export type StatusInterface = 'BACKLOG' | 'TODO' | 'DONE';
+export type ComplexityInterface = 'EASY' | 'MEDIUM' | 'HARD';
+
+export interface CreateTodoItemInterface {
+  status: StatusInterface;
+  title: string;
+  subTitle: string;
+  text: string;
+  complexity: ComplexityInterface;
+}

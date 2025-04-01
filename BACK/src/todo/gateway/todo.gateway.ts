@@ -1,13 +1,22 @@
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { UnauthorizedException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
 import { UserService } from '../../user/services/user.service';
 import { AuthService } from '../../auth/services/auth.service';
-import { UserInterface } from '../../user/interfaces/user.interface';
 import { ConnectionService } from '../../user/services/connection.service';
 import { TodoService } from '../services/todo.service';
+
 import { TodoEntity } from '../entities/todo.entity';
+
+import { ConnectionInterface, UserInterface } from '../../user/interfaces/user.interface';
+import { CreateTodoItemInterface, TodoItemInterface } from '../interfaces/todo.interface';
 
 @WebSocketGateway({ namespace: 'todos', cors: { origin: ['http://localhost:3000', 'http://localhost:4200'] } })
 export class TodoGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -56,14 +65,41 @@ export class TodoGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  private disconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
     // remove the connection from our database
-    socket.emit('Error', new UnauthorizedException());
+    await this.connectionService.deleteBySocketId(socket.id);
     socket.disconnect();
   }
 
-  async handleDisconnect(socket: Socket) {
-    await this.connectionService.deleteBySocketId(socket.id);
+  @SubscribeMessage('addTodo')
+  async onAddTodo(socket: Socket, todoItem: TodoItemInterface) {
+    // save new todoItem to our database
+    const createdTodoItem: CreateTodoItemInterface = await this.todoService.save(todoItem);
+    console.log(createdTodoItem);
+
+    // publish the new todoItem to all connected users
+    const connections: ConnectionInterface[] = await this.connectionService.findAll();
+    for (const connection of connections) {
+      if (connection.socketId) this.server.to(connection.socketId).emit('addedTodo', createdTodoItem);
+    }
+  }
+
+  @SubscribeMessage('updateTodo')
+  async onUpdateTodo(socket: Socket, todoItem: TodoItemInterface) {
+    // update todoItem in database
+    const updatedTodoItem: CreateTodoItemInterface | null | undefined = await this.todoService.update(todoItem);
+
+    if (updatedTodoItem) {
+      // publish the new updatedTodoItem to all connected users
+      const connections: ConnectionInterface[] = await this.connectionService.findAll();
+      for (const connection of connections) {
+        if (connection.socketId) this.server.to(connection.socketId).emit('updatedTodo', updatedTodoItem);
+      }
+    }
+  }
+
+  private disconnect(socket: Socket) {
+    socket.emit('Error', new UnauthorizedException());
     socket.disconnect();
   }
 }

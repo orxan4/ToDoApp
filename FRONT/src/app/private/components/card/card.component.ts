@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { TodoItemInterface } from '../../interfaces/todo-item.interface';
 import { NgClass } from '@angular/common';
+
+import { TodoItemInterface } from '../../interfaces/todo-item.interface';
 
 @Component({
   selector: 'app-card',

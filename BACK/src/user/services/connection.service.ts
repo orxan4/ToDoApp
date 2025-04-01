@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConnectionEntity } from '../entities/connection.entity';
 import { DeleteResult, Repository } from 'typeorm';
+
+import { ConnectionEntity } from '../entities/connection.entity';
 import { ConnectionInterface } from '../interfaces/user.interface';
 
 @Injectable()
@@ -22,5 +23,9 @@ export class ConnectionService {
 
   async deleteAll() {
     await this.connectionRepo.createQueryBuilder().delete().execute();
+  }
+
+  async findAll(): Promise<ConnectionEntity[]> {
+    return this.connectionRepo.find();
   }
 }

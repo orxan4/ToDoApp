@@ -16,3 +16,11 @@ export interface TodoItemInterface {
 
 export type StatusInterface = 'BACKLOG' | 'TODO' | 'DONE';
 export type ComplexityInterface = 'EASY' | 'MEDIUM' | 'HARD';
+
+export interface CreateTodoItemInterface {
+  status: StatusInterface;
+  title: string;
+  subTitle: string;
+  text: string;
+  complexity: ComplexityInterface;
+}

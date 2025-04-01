@@ -5,9 +5,11 @@ import { MatError, MatFormField, MatHint } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatButton } from '@angular/material/button';
+import { MatDialogRef } from '@angular/material/dialog';
 
-import { ComplexityInterface, StatusInterface } from '../../interfaces/todo-item.interface';
+import { TodoService } from '../../services/todo.service';
 import { complexityValues, statusValues } from '../../constants/private-item.constants';
+import { ComplexityInterface, CreateTodoItemInterface, StatusInterface } from '../../interfaces/todo-item.interface';
 
 @Component({
   selector: 'app-create-todo',
@@ -32,22 +34,40 @@ export class CreateTodoComponent {
     title: new FormControl<string | null>(null, [Validators.required]),
     subTitle: new FormControl<string | null>(null, [Validators.required]),
     text: new FormControl<string | null>(null, [Validators.required]),
-    complexity: new FormControl<string | null>('EASY', [Validators.required]),
-    status: new FormControl<string | null>('BACKLOG', [Validators.required]),
+    complexity: new FormControl<string>('EASY', [Validators.required]),
+    status: new FormControl<string>('BACKLOG', [Validators.required]),
   });
 
-  get title() {
+  constructor(private todoService: TodoService, private dialogRef: MatDialogRef<CreateTodoComponent>) {}
+
+  get title(): FormControl<string> {
     return this.form.get('title') as FormControl;
   }
-  get subTitle() {
+  get subTitle(): FormControl<string> {
     return this.form.get('subTitle') as FormControl;
   }
-  get text() {
+  get text(): FormControl<string> {
     return this.form.get('text') as FormControl;
+  }
+  get complexity(): FormControl<ComplexityInterface> {
+    return this.form.get('complexity') as FormControl;
+  }
+  get status(): FormControl<StatusInterface> {
+    return this.form.get('status') as FormControl;
   }
 
   onCreateTodo() {
-    console.log("Works");
-    console.log(this.form.value);
+    if (this.form.valid) {
+      const todo: CreateTodoItemInterface = {
+        title: this.title.value,
+        subTitle: this.subTitle.value,
+        text: this.text.value,
+        complexity: this.complexity.value,
+        status: this.status.value,
+      }
+
+      this.todoService.saveTodo(todo);
+      this.dialogRef.close();
+    }
   }
 }

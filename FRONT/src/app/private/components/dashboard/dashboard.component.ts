@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Observable } from 'rxjs';
 
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 
-import { TodoService } from '../../services/todo.service';
 import { CardComponent } from '../card/card.component';
 import { CreateTodoComponent } from '../create-todo/create-todo.component';
+import { TodoService } from '../../services/todo.service';
 import { CreateTodoItemInterface, TodoItemInterface } from '../../interfaces/todo-item.interface';
-import { todoExampleItems } from '../../constants/private-item.constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,24 +19,35 @@ import { todoExampleItems } from '../../constants/private-item.constants';
 })
 export class DashboardComponent implements OnInit {
   createTodoComponentDialogRef: MatDialogRef<CreateTodoComponent> | undefined;
-  constructor(
-    private todoService: TodoService,
-    private matDialog: MatDialog,
-  ) {}
 
   backlogItems: TodoItemInterface[] = [];
   todoItems: TodoItemInterface[] = [];
   doneItems: TodoItemInterface[] = [];
-  items: CreateTodoItemInterface[] = todoExampleItems;
+
+  items$: Observable<CreateTodoItemInterface[]> = new Observable();
+
+  constructor(private todoService: TodoService, private matDialog: MatDialog) {}
 
   ngOnInit() {
-    this.todoService.sendMessage();
     this.todoService.getTodos();
+    this.todoService.getAddedTodo();
+    this.todoService.getUpdatedTodo();
+    this.items$ = this.todoService.todoItems$;
 
-    // refactor in next stories
-    this.backlogItems = this.items.filter((item) => item.status === 'BACKLOG');
-    this.todoItems = this.items.filter((item) => item.status === 'TODO');
-    this.doneItems = this.items.filter((item) => item.status === 'DONE');
+    this.items$.pipe().subscribe(
+      (itemsData: CreateTodoItemInterface[]) => {
+        this.backlogItems = itemsData.filter((item: CreateTodoItemInterface) => item.status === 'BACKLOG');
+        this.todoItems = itemsData.filter((item: CreateTodoItemInterface) => item.status === 'TODO');
+        this.doneItems = itemsData.filter((item: CreateTodoItemInterface) => item.status === 'DONE');
+    })
+
+    // this.items$.pipe(
+    //   tap((items: CreateTodoItemInterface[]) => {
+    //     this.backlogItems = items.filter((item: CreateTodoItemInterface) => item.status === 'BACKLOG');
+    //     this.todoItems = items.filter((item: CreateTodoItemInterface) => item.status === 'TODO');
+    //     this.doneItems = items.filter((item: CreateTodoItemInterface) => item.status === 'DONE');
+    //   }),
+    // ).subscribe()
   }
 
   drop(event: CdkDragDrop<TodoItemInterface[]>) {
@@ -54,6 +65,9 @@ export class DashboardComponent implements OnInit {
         event.currentIndex,
       );
     }
+
+    const updatedItem: TodoItemInterface = event.container.data[event.currentIndex];
+    this.todoService.updateTodo(updatedItem, event.container.id);
   }
 
   onShowCreateTodoDialog() {
